@@ -6,35 +6,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     /* 전체화면 전용 UI */
-.fullscreen-active .card {
-  width: 100vw !important;
-  height: 100vh !important;
-  border-radius: 0 !important;
-  border: none !important;
-}
+    .fullscreen-active .card {
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+      border: none !important;
+    }
 
-.fullscreen-active header,
-.fullscreen-active .viewer-header,
-.fullscreen-active .viewer-footer,
-.fullscreen-active .hint-text {
-  display: none !important;
-}
+    .fullscreen-active header,
+    .fullscreen-active .viewer-header,
+    .fullscreen-active .viewer-footer,
+    .fullscreen-active .hint-text {
+      display: none !important;
+    }
 
-.fullscreen-active .viewer-main {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    .fullscreen-active .viewer-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.fullscreen-active #handshapeName {
-  font-size: 4rem !important;
-}
+    .fullscreen-active #handshapeName {
+      font-size: 4rem !important;
+    }
 
-.fullscreen-active #handshapeImage {
-  max-width: 90vw !important;
-  max-height: 90vh !important;
-}
+    .fullscreen-active #handshapeImage {
+      max-width: 90vw !important;
+      max-height: 90vh !important;
+    }
 
     * {
       box-sizing: border-box;
@@ -192,39 +192,6 @@
       font-size: 0.8rem;
       background: #020617;
     }
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-    }
-    .overlay-inner {
-      background: #020617;
-      border-radius: 1rem;
-      border: 1px solid #4b5563;
-      padding: 1rem;
-      max-width: 90vw;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .overlay img {
-      max-width: 80vw;
-      max-height: 70vh;
-      object-fit: contain;
-      border-radius: 0.75rem;
-      border: 1px solid #374151;
-      background: #000;
-    }
-    .overlay-close {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
     @media (max-width: 640px) {
       .card {
         padding: 1rem;
@@ -243,7 +210,7 @@
   <header>
     <h1>수형 랜덤 퀴즈 연습</h1>
     <div class="meta">
-      모드 선택 &nbsp;→&nbsp; 이름 또는 그림 보고 맞추기 · 단축키 지원
+      모드 선택 &nbsp;→&nbsp; 이름 또는 그림 보고 맞추기 · 단축키 · 스와이프 지원
     </div>
   </header>
 
@@ -256,8 +223,8 @@
           아래 2가지 방식 중 하나를 선택해서 연습할 수 있어요.
         </p>
         <ul style="font-size:0.85rem; opacity:0.9; margin-bottom:0.75rem; padding-left:1.2rem;">
-          <li><b>수형이름 → 수형그림</b> : 이름을 보고 손 모양을 떠올리고, <b>I</b> 키로 정답 이미지 확인</li>
-          <li><b>수형그림 → 수형이름</b> : 그림을 보고 이름을 떠올리고, <b>N</b> 키로 이름 확인</li>
+          <li><b>수형이름 → 수형그림</b> : 이름을 보고 손 모양을 떠올리고, <b>I</b> / <b>↓</b> 키로 그림 보기</li>
+          <li><b>수형그림 → 수형이름</b> : 그림을 보고 이름을 떠올리고, <b>N</b> / <b>↑</b> 키로 이름 보기</li>
         </ul>
 
         <div class="mode-buttons">
@@ -281,13 +248,14 @@
             <span id="modeLabel" class="badge">모드: -</span>
             <span id="orderLabel" class="badge">순서: 1~66</span>
           </div>
-          <div>
-            <button id="btnFullscreen" class="small secondary">전체화면</button> <!-- ⭐ 추가 -->
+          <div style="display:flex; gap:0.5rem;">
+            <button id="btnFullscreen" class="small secondary">전체화면</button>
             <button id="btnBackToMode" class="small secondary">모드 선택으로</button>
           </div>
         </div>
 
         <div class="viewer-main">
+          <!-- 이 둘의 순서는 flex order로 제어됨 -->
           <div id="nameBox" class="hidden">
             <div class="handshape-name" id="handshapeName"></div>
           </div>
@@ -309,24 +277,16 @@
           <div class="key-help">
             <span class="key">←</span>이전
             <span class="key">→</span>다음
-            <span class="key">R</span>랜덤
-            <span class="key">I</span>이미지 보기
-            <span class="key">N</span>이름 보기
+            <span class="key">↑</span>이름 보기
+            <span class="key">↓</span>그림 보기
+            <span class="key">I</span>이미지
+            <span class="key">N</span>이름
+            <span class="key">F</span>전체화면
           </div>
         </div>
       </section>
     </div>
   </main>
-
-  <!-- 이미지 팝업 (이름→그림 모드에서 I 키 눌렀을 때) -->
-  <div id="imagePopup" class="overlay hidden">
-    <div class="overlay-inner">
-      <img id="popupImage" src="" alt="수형 그림 크게 보기" />
-      <div class="overlay-close">
-        이미지를 클릭하거나, <span class="key">Esc</span> 키를 누르면 닫힙니다.
-      </div>
-    </div>
-  </div>
 
   <script>
     // ===== 데이터: 수형 이름 66개 =====
@@ -399,24 +359,21 @@
       "ILY형"
     ];
 
-    // 이미지 파일 경로 구성: image/수형이름.png
+    // 이미지 파일 경로: image/수형이름.png
     const handshapes = handshapeNames.map(name => ({
       name,
       file: `image/${name}.png`
     }));
 
-    // ===== 상태 변수들 =====
+    // ===== 상태 변수 =====
     const originalOrder = handshapes.map((_, idx) => idx); // 0~65
     let currentOrder = [...originalOrder];
     let isRandomOrder = false;
     let currentIndex = 0;
 
-    // mode: "nameToImage" (수형이름→수형그림) / "imageToName" (수형그림→수형이름)
+    // mode: "nameToImage" / "imageToName"
     let mode = null;
-
-    // 이름/그림 표시 관련
-    let nameVisible = false;  // imageToName 모드에서 N 키로 보여줄 때 사용
-    let popupVisible = false; // 이름→그림 모드에서 팝업
+    let nameVisible = false; // imageToName 모드에서 이름 토글용
 
     // ===== DOM 요소 =====
     const modeSelectSection = document.getElementById("modeSelect");
@@ -441,11 +398,9 @@
     const btnNext = document.getElementById("btnNext");
     const btnToggleOrder = document.getElementById("btnToggleOrder");
 
-    const popup = document.getElementById("imagePopup");
-    const popupImage = document.getElementById("popupImage");
-    const viewerMain = document.querySelector(".viewer-main"); // ← 이 줄 추가
+    const viewerMain = document.querySelector(".viewer-main");
 
-    // ===== 유틸 함수 =====
+    // ===== 유틸 =====
     function shuffleArray(arr) {
       const a = [...arr];
       for (let i = a.length - 1; i > 0; i--) {
@@ -456,23 +411,35 @@
     }
 
     function updateOrderLabel() {
-      if (isRandomOrder) {
-        orderLabel.textContent = "순서: 랜덤";
-      } else {
-        orderLabel.textContent = "순서: 1~66";
-      }
+      orderLabel.textContent = isRandomOrder ? "순서: 랜덤" : "순서: 1~66";
     }
 
     function updateIndexInfo() {
       indexInfo.textContent = `${currentIndex + 1} / ${handshapes.length}`;
     }
 
+    function getCurrentHandshape() {
+      const idx = currentOrder[currentIndex];
+      return handshapes[idx];
+    }
+
+    function applyLayoutForMode() {
+      // flex-direction: column 에서 order로 위/아래 순서 제어
+      if (mode === "nameToImage") {
+        // 이름 위, 그림 아래
+        nameBox.style.order = 1;
+        imageBox.style.order = 2;
+      } else if (mode === "imageToName") {
+        // 그림 위, 이름 아래
+        imageBox.style.order = 1;
+        nameBox.style.order = 2;
+      }
+    }
+
     function setMode(newMode) {
       mode = newMode;
       currentIndex = 0;
       nameVisible = false;
-      popupVisible = false;
-      hidePopup();
 
       if (mode === "nameToImage") {
         modeLabel.textContent = "모드: 수형이름 → 수형그림";
@@ -480,6 +447,7 @@
         modeLabel.textContent = "모드: 수형그림 → 수형이름";
       }
 
+      applyLayoutForMode();
       modeSelectSection.classList.add("hidden");
       viewerSection.classList.remove("hidden");
 
@@ -492,76 +460,70 @@
       modeSelectSection.classList.remove("hidden");
     }
 
-    function getCurrentHandshape() {
-      const idx = currentOrder[currentIndex];
-      return handshapes[idx];
-    }
-
     function renderCurrent() {
       const item = getCurrentHandshape();
       updateOrderLabel();
       updateIndexInfo();
+      applyLayoutForMode();
 
       if (mode === "nameToImage") {
-        // 이름 → 그림: 기본은 이름만 보여줌, I 키(또는 버튼)로 팝업
+        // 기본: 이름만 보이고, 그림은 숨김
         nameBox.classList.remove("hidden");
         imageBox.classList.add("hidden");
 
         handshapeNameEl.textContent = item.name;
-        hintTextEl.textContent = "이름을 보고 손 모양을 떠올려 보세요. 정답 그림은 키보드 I 를 눌러 팝업으로 확인할 수 있어요.";
+        handshapeImageEl.src = ""; // 필요시 클린업
+        hintTextEl.textContent =
+          "이름을 보고 손 모양을 떠올려 보세요. 그림은 I / ↓ 키 또는 위로 스와이프(모바일)로 볼 수 있어요.";
       } else if (mode === "imageToName") {
-        // 그림 → 이름: 기본은 그림만, N 키로 이름 토글
+        // 기본: 그림만 보이고, 이름은 숨김
         nameVisible = false;
-
         nameBox.classList.add("hidden");
         imageBox.classList.remove("hidden");
 
         handshapeImageEl.src = item.file;
         handshapeImageEl.alt = `${item.name} 수형 그림`;
+        handshapeNameEl.textContent = "";
 
-        hintTextEl.textContent = "그림을 보고 수형 이름을 떠올려 보세요. 정답 이름은 키보드 N 을 눌러 확인할 수 있어요.";
-        handshapeNameEl.textContent = ""; // 혹시 이전 값 제거
+        hintTextEl.textContent =
+          "그림을 보고 수형 이름을 떠올려 보세요. 이름은 N / ↑ 키 또는 아래로 스와이프(모바일)로 볼 수 있어요.";
       }
     }
 
+    // 이름 → 그림 모드에서 그림 보이기
+    function showImageInNameMode() {
+      if (mode !== "nameToImage") return;
+      const item = getCurrentHandshape();
+      imageBox.classList.remove("hidden");
+      handshapeImageEl.src = item.file;
+      handshapeImageEl.alt = `${item.name} 수형 그림`;
+    }
+
+    // 그림 → 이름 모드에서 이름 토글
     function showNameInImageMode() {
       if (mode !== "imageToName") return;
       const item = getCurrentHandshape();
-      nameVisible = !nameVisible; // 토글 (원하면 항상 보이도록 바꿔도 됨)
+      nameVisible = !nameVisible;
 
       if (nameVisible) {
         nameBox.classList.remove("hidden");
         handshapeNameEl.textContent = item.name;
-        hintTextEl.textContent = "다른 문제로 넘어가려면 ← / → 키를 누르세요.";
+        hintTextEl.textContent = "다른 수형으로 넘어가려면 ← / → 키 또는 스와이프를 사용하세요.";
       } else {
         nameBox.classList.add("hidden");
         handshapeNameEl.textContent = "";
-        hintTextEl.textContent = "그림을 보고 수형 이름을 떠올려 보세요. 정답 이름은 키보드 N 을 눌러 확인할 수 있어요.";
+        hintTextEl.textContent =
+          "그림을 보고 수형 이름을 떠올려 보세요. 이름은 N / ↑ 키 또는 아래로 스와이프(모바일)로 볼 수 있어요.";
       }
-    }
-
-    function showImagePopup() {
-      if (mode !== "nameToImage") return;
-      const item = getCurrentHandshape();
-      popupImage.src = item.file;
-      popupImage.alt = `${item.name} 수형 그림`;
-      popup.classList.remove("hidden");
-      popupVisible = true;
-    }
-
-    function hidePopup() {
-      popup.classList.add("hidden");
-      popupVisible = false;
     }
 
     function goPrev() {
       if (currentIndex > 0) {
         currentIndex--;
       } else {
-        currentIndex = handshapes.length - 1; // 맨 앞으로 가면 끝으로 순환
+        currentIndex = handshapes.length - 1;
       }
       nameVisible = false;
-      hidePopup();
       renderCurrent();
     }
 
@@ -569,15 +531,13 @@
       if (currentIndex < handshapes.length - 1) {
         currentIndex++;
       } else {
-        currentIndex = 0; // 마지막에서 다시 처음으로
+        currentIndex = 0;
       }
       nameVisible = false;
-      hidePopup();
       renderCurrent();
     }
 
     function toggleOrder() {
-      // R 키 또는 버튼: 랜덤 <-> 원래 순서(1~66) 토글
       if (!isRandomOrder) {
         currentOrder = shuffleArray(originalOrder);
         isRandomOrder = true;
@@ -587,7 +547,6 @@
       }
       currentIndex = 0;
       nameVisible = false;
-      hidePopup();
       renderCurrent();
     }
 
@@ -596,12 +555,12 @@
     btnImageToName.addEventListener("click", () => setMode("imageToName"));
     btnBackToMode.addEventListener("click", backToModeSelect);
     btnFullscreen.addEventListener("click", toggleFullscreen);
-  
+
     btnPrev.addEventListener("click", goPrev);
     btnNext.addEventListener("click", goNext);
     btnToggleOrder.addEventListener("click", toggleOrder);
 
-        // ===== 터치 스와이프 기능 (모바일) =====
+    // ===== 터치 스와이프 기능 (모바일) =====
     let touchStartX = 0;
     let touchStartY = 0;
     let touchEndX = 0;
@@ -613,7 +572,7 @@
 
     if (viewerMain) {
       viewerMain.addEventListener("touchstart", (e) => {
-        if (e.touches.length !== 1) return; // 두 손가락 이상이면 무시
+        if (e.touches.length !== 1) return;
         const t = e.touches[0];
         touchStartX = t.clientX;
         touchStartY = t.clientY;
@@ -621,7 +580,7 @@
       });
 
       viewerMain.addEventListener("touchend", (e) => {
-        if (!mode) return; // 아직 모드 안 들어갔으면 무시
+        if (!mode) return;
 
         if (e.changedTouches.length !== 1) return;
         const t = e.changedTouches[0];
@@ -632,87 +591,53 @@
         const dx = touchEndX - touchStartX;
         const dy = touchEndY - touchStartY;
 
-        // 너무 느린 드래그는 스와이프로 보지 않음
         if (dt > SWIPE_MAX_TIME) return;
 
         const absDx = Math.abs(dx);
         const absDy = Math.abs(dy);
 
-        // 가로/세로 방향 판단
         if (absDx < SWIPE_THRESHOLD && absDy < SWIPE_THRESHOLD) {
-          return; // 거의 안 움직였으면 무시
+          return;
         }
 
         // 가로 스와이프 (다음/이전)
         if (absDx > absDy) {
-          // 오른쪽 -> 왼쪽 (왼쪽으로 스와이프) = 다음
+          // 오른쪽 -> 왼쪽 = 다음
           if (dx < 0) {
             e.preventDefault();
             goNext();
           }
-          // 왼쪽 -> 오른쪽 (오른쪽으로 스와이프) = 이전
+          // 왼쪽 -> 오른쪽 = 이전
           else if (dx > 0) {
             e.preventDefault();
             goPrev();
           }
         } else {
-          // 세로 스와이프 (그림 팝업 / 이름 팝업)
-          // 아래 -> 위 (위쪽 스와이프) = 수형그림 팝업
+          // 세로 스와이프
+          // 아래 -> 위 (위쪽 스와이프) = 수형그림 보기 (이름→그림 모드)
           if (dy < 0) {
             e.preventDefault();
             if (mode === "nameToImage") {
-              // 이름 → 그림 모드: 그림 팝업
-              showImagePopup();
-            } else if (mode === "imageToName") {
-              // 그림 → 이름 모드에서는 이미 그림이 보이니, 원하면 무시 or 이름 보여주기로 바꿔도 됨
-              // 여기서는 일단 아무것도 안 함
+              showImageInNameMode();
             }
           }
-          // 위 -> 아래 (아래쪽 스와이프) = 수형이름 팝업
+          // 위 -> 아래 (아래쪽 스와이프) = 수형이름 보기 (그림→이름 모드)
           else if (dy > 0) {
             e.preventDefault();
             if (mode === "imageToName") {
-              // 그림 → 이름 모드: 이름 표시 토글
               showNameInImageMode();
-            } else if (mode === "nameToImage") {
-              // 이름 → 그림 모드에서는 이미 이름이 보이니 특별 동작 없음
             }
           }
         }
       });
     }
 
-    // 팝업 클릭 시 닫기
-    popup.addEventListener("click", hidePopup);
-
-    // 키보드 단축키 (수형 이동 / 보기 관련)
+    // ===== 키보드 단축키 (이동/보기) =====
     document.addEventListener("keydown", (event) => {
-      // 팝업이 떠 있을 때 Esc로 닫기
-      if (popupVisible && event.key === "Escape") {
-        hidePopup();
-        return;
-      }
-
-      // 아직 모드 선택 전이면(=viewer 안 들어간 상태면) 키 입력 무시
-      // 단, F는 전체화면이니까 여기서 막지 않고 아래 다른 리스너에서 처리
+      // 아직 모드 선택 전이면 무시 (F는 아래 리스너에서 처리)
       if (!mode) return;
 
       switch (event.key) {
-        case "ArrowUp":
-      // 위 화살표 = 수형이름 나오게 (imageToName 모드에서 N 키랑 같은 역할)
-      event.preventDefault();
-      if (mode === "imageToName") {
-        showNameInImageMode();
-      }
-      break;
-
-    case "ArrowDown":
-      // 아래 화살표 = 수형그림 나오게 (nameToImage 모드에서 I 키랑 같은 역할)
-      event.preventDefault();
-      if (mode === "nameToImage") {
-        showImagePopup();
-      }
-      break;
         case "ArrowLeft":
           event.preventDefault();
           goPrev();
@@ -721,6 +646,20 @@
           event.preventDefault();
           goNext();
           break;
+        case "ArrowUp":
+          // 그림 → 이름 모드에서 이름 보기
+          event.preventDefault();
+          if (mode === "imageToName") {
+            showNameInImageMode();
+          }
+          break;
+        case "ArrowDown":
+          // 이름 → 그림 모드에서 그림 보기
+          event.preventDefault();
+          if (mode === "nameToImage") {
+            showImageInNameMode();
+          }
+          break;
         case "r":
         case "R":
           event.preventDefault();
@@ -728,15 +667,13 @@
           break;
         case "i":
         case "I":
-          // 이름 → 그림 모드에서만 팝업
           event.preventDefault();
           if (mode === "nameToImage") {
-            showImagePopup();
+            showImageInNameMode();
           }
           break;
         case "n":
         case "N":
-          // 그림 → 이름 모드에서 이름 표시
           event.preventDefault();
           if (mode === "imageToName") {
             showNameInImageMode();
@@ -746,7 +683,6 @@
     });
 
     // ===== 전체화면 기능 =====
-
     function enterFullscreen() {
       const elem = document.documentElement;
       if (elem.requestFullscreen) elem.requestFullscreen();
@@ -766,7 +702,7 @@
       }
     }
 
-    // ESC로 전체화면 빠져나올 때 UI 복구
+    // 전체화면 종료 시 UI 복구
     document.addEventListener("fullscreenchange", () => {
       if (!document.fullscreenElement) {
         document.body.classList.remove("fullscreen-active");
