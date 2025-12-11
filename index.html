@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>수형 퀴즈 연습</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", system-ui, -apple-system, sans-serif;
+      background: #111827;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      padding: 0.75rem 1.25rem;
+      background: #020617;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #1f2937;
+    }
+    header h1 {
+      font-size: 1rem;
+      margin: 0;
+    }
+    header .meta {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .card {
+      background: #020617;
+      border-radius: 1rem;
+      border: 1px solid #1f2937;
+      padding: 1.5rem;
+      max-width: 720px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .card h2 {
+      margin: 0 0 1rem;
+      font-size: 1.2rem;
+    }
+    .mode-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    button {
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.5rem 1.2rem;
+      background: #111827;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+    }
+    button.primary {
+      background: #16a34a;
+      border-color: #22c55e;
+      font-weight: 600;
+    }
+    button.secondary {
+      background: #1f2937;
+    }
+    button.small {
+      padding: 0.35rem 0.8rem;
+      font-size: 0.8rem;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .viewer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: #111827;
+      border: 1px solid #374151;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+    .viewer-main {
+      text-align: center;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .handshape-name {
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .handshape-image {
+      max-width: 320px;
+      max-height: 260px;
+      border-radius: 0.75rem;
+      border: 1px solid #374151;
+      background: #020617;
+      object-fit: contain;
+      padding: 0.75rem;
+    }
+    .hint-text {
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+    .viewer-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .key-help {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+    }
+    .key {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.35rem;
+      border: 1px solid #4b5563;
+      min-width: 1.4rem;
+      font-size: 0.8rem;
+      background: #020617;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .overlay-inner {
+      background: #020617;
+      border-radius: 1rem;
+      border: 1px solid #4b5563;
+      padding: 1rem;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .overlay img {
+      max-width: 80vw;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 0.75rem;
+      border: 1px solid #374151;
+      background: #000;
+    }
+    .overlay-close {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+    @media (max-width: 640px) {
+      .card {
+        padding: 1rem;
+      }
+      .handshape-name {
+        font-size: 1.6rem;
+      }
+      .handshape-image {
+        max-width: 260px;
+        max-height: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>수형 랜덤 퀴즈 연습</h1>
+    <div class="meta">
+      모드 선택 &nbsp;→&nbsp; 이름 또는 그림 보고 맞추기 · 단축키 지원
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <!-- 첫 화면: 모드 선택 -->
+      <section id="modeSelect">
+        <h2>연습 모드를 선택하세요</h2>
+        <p style="font-size:0.9rem; opacity:0.85; margin-bottom:0.75rem;">
+          아래 2가지 방식 중 하나를 선택해서 연습할 수 있어요.
+        </p>
+        <ul style="font-size:0.85rem; opacity:0.9; margin-bottom:0.75rem; padding-left:1.2rem;">
+          <li><b>수형이름 → 수형그림</b> : 이름을 보고 손 모양을 떠올리고, <b>I</b> 키로 정답 이미지 확인</li>
+          <li><b>수형그림 → 수형이름</b> : 그림을 보고 이름을 떠올리고, <b>N</b> 키로 이름 확인</li>
+        </ul>
+
+        <div class="mode-buttons">
+          <button id="btnNameToImage" class="primary">
+            수형이름 → 수형그림
+          </button>
+          <button id="btnImageToName" class="secondary">
+            수형그림 → 수형이름
+          </button>
+        </div>
+
+        <p style="font-size:0.8rem; opacity:0.8; margin-top:1rem;">
+          ※ 언제든지 <span class="key">R</span> 키로 순서를 <b>랜덤 / 원래 순서(1~66)</b>로 토글할 수 있어요.
+        </p>
+      </section>
+
+      <!-- 본 뷰어 영역 -->
+      <section id="viewer" class="hidden">
+        <div class="viewer-header">
+          <div>
+            <span id="modeLabel" class="badge">모드: -</span>
+            <span id="orderLabel" class="badge">순서: 1~66</span>
+          </div>
+          <div>
+            <button id="btnBackToMode" class="small secondary">모드 선택으로</button>
+          </div>
+        </div>
+
+        <div class="viewer-main">
+          <div id="nameBox" class="hidden">
+            <div class="handshape-name" id="handshapeName"></div>
+          </div>
+          <div id="imageBox" class="hidden">
+            <img id="handshapeImage" class="handshape-image" src="" alt="수형 그림" />
+          </div>
+          <div class="hint-text" id="hintText"></div>
+        </div>
+
+        <div class="viewer-footer">
+          <div>
+            <button id="btnPrev" class="small secondary">◀ 이전 (←)</button>
+            <button id="btnNext" class="small secondary">다음 (→) ▶</button>
+            <button id="btnToggleOrder" class="small">랜덤 토글 (R)</button>
+          </div>
+          <div>
+            <span id="indexInfo">1 / 66</span>
+          </div>
+          <div class="key-help">
+            <span class="key">←</span>이전
+            <span class="key">→</span>다음
+            <span class="key">R</span>랜덤
+            <span class="key">I</span>이미지 보기
+            <span class="key">N</span>이름 보기
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- 이미지 팝업 (이름→그림 모드에서 I 키 눌렀을 때) -->
+  <div id="imagePopup" class="overlay hidden">
+    <div class="overlay-inner">
+      <img id="popupImage" src="" alt="수형 그림 크게 보기" />
+      <div class="overlay-close">
+        이미지를 클릭하거나, <span class="key">Esc</span> 키를 누르면 닫힙니다.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== 데이터: 수형 이름 66개 =====
+    const handshapeNames = [
+      "O형",
+      "만형",
+      "부리형",
+      "천형",
+      "백형",
+      "F형",
+      "1형",
+      "1형굴곡형",
+      "10형",
+      "2형",
+      "2형붙임형",
+      "R형",
+      "12형",
+      "20형",
+      "N형",
+      "3형",
+      "ㅌ형",
+      "3형붙임형",
+      "13형",
+      "30형",
+      "M형",
+      "4형",
+      "4형붙임형",
+      "14형",
+      "40형",
+      "5형",
+      "ㅎ형",
+      "50형",
+      "6형",
+      "긴부리형",
+      "15형",
+      "6형굴곡형",
+      "G형",
+      "60형",
+      "T형",
+      "7형",
+      "7형붙임형",
+      "K형",
+      "17형",
+      "지하철형",
+      "70형",
+      "다시형",
+      "8형",
+      "18형",
+      "80형",
+      "9형",
+      "9형벌림형",
+      "자동차형",
+      "9형굴곡형",
+      "9형접힘형",
+      "19형",
+      "귀신형",
+      "화장실형",
+      "전기형",
+      "제비형",
+      "여우형",
+      "지정형",
+      "컵형",
+      "90형",
+      "씨앗형",
+      "주먹형",
+      "주먹접촉형",
+      "I형",
+      "I굽힘형",
+      "사람형",
+      "ILY형"
+    ];
+
+    // 이미지 파일 경로 구성: image/수형이름.png
+    const handshapes = handshapeNames.map(name => ({
+      name,
+      file: `image/${name}.png`
+    }));
+
+    // ===== 상태 변수들 =====
+    const originalOrder = handshapes.map((_, idx) => idx); // 0~65
+    let currentOrder = [...originalOrder];
+    let isRandomOrder = false;
+    let currentIndex = 0;
+
+    // mode: "nameToImage" (수형이름→수형그림) / "imageToName" (수형그림→수형이름)
+    let mode = null;
+
+    // 이름/그림 표시 관련
+    let nameVisible = false;  // imageToName 모드에서 N 키로 보여줄 때 사용
+    let popupVisible = false; // 이름→그림 모드에서 팝업
+
+    // ===== DOM 요소 =====
+    const modeSelectSection = document.getElementById("modeSelect");
+    const viewerSection = document.getElementById("viewer");
+
+    const btnNameToImage = document.getElementById("btnNameToImage");
+    const btnImageToName = document.getElementById("btnImageToName");
+    const btnBackToMode = document.getElementById("btnBackToMode");
+
+    const modeLabel = document.getElementById("modeLabel");
+    const orderLabel = document.getElementById("orderLabel");
+    const indexInfo = document.getElementById("indexInfo");
+
+    const nameBox = document.getElementById("nameBox");
+    const imageBox = document.getElementById("imageBox");
+    const handshapeNameEl = document.getElementById("handshapeName");
+    const handshapeImageEl = document.getElementById("handshapeImage");
+    const hintTextEl = document.getElementById("hintText");
+
+    const btnPrev = document.getElementById("btnPrev");
+    const btnNext = document.getElementById("btnNext");
+    const btnToggleOrder = document.getElementById("btnToggleOrder");
+
+    const popup = document.getElementById("imagePopup");
+    const popupImage = document.getElementById("popupImage");
+
+    // ===== 유틸 함수 =====
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function updateOrderLabel() {
+      if (isRandomOrder) {
+        orderLabel.textContent = "순서: 랜덤";
+      } else {
+        orderLabel.textContent = "순서: 1~66";
+      }
+    }
+
+    function updateIndexInfo() {
+      indexInfo.textContent = `${currentIndex + 1} / ${handshapes.length}`;
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      currentIndex = 0;
+      nameVisible = false;
+      popupVisible = false;
+      hidePopup();
+
+      if (mode === "nameToImage") {
+        modeLabel.textContent = "모드: 수형이름 → 수형그림";
+      } else if (mode === "imageToName") {
+        modeLabel.textContent = "모드: 수형그림 → 수형이름";
+      }
+
+      modeSelectSection.classList.add("hidden");
+      viewerSection.classList.remove("hidden");
+
+      renderCurrent();
+    }
+
+    function backToModeSelect() {
+      mode = null;
+      viewerSection.classList.add("hidden");
+      modeSelectSection.classList.remove("hidden");
+    }
+
+    function getCurrentHandshape() {
+      const idx = currentOrder[currentIndex];
+      return handshapes[idx];
+    }
+
+    function renderCurrent() {
+      const item = getCurrentHandshape();
+      updateOrderLabel();
+      updateIndexInfo();
+
+      if (mode === "nameToImage") {
+        // 이름 → 그림: 기본은 이름만 보여줌, I 키(또는 버튼)로 팝업
+        nameBox.classList.remove("hidden");
+        imageBox.classList.add("hidden");
+
+        handshapeNameEl.textContent = item.name;
+        hintTextEl.textContent = "이름을 보고 손 모양을 떠올려 보세요. 정답 그림은 키보드 I 를 눌러 팝업으로 확인할 수 있어요.";
+      } else if (mode === "imageToName") {
+        // 그림 → 이름: 기본은 그림만, N 키로 이름 토글
+        nameVisible = false;
+
+        nameBox.classList.add("hidden");
+        imageBox.classList.remove("hidden");
+
+        handshapeImageEl.src = item.file;
+        handshapeImageEl.alt = `${item.name} 수형 그림`;
+
+        hintTextEl.textContent = "그림을 보고 수형 이름을 떠올려 보세요. 정답 이름은 키보드 N 을 눌러 확인할 수 있어요.";
+        handshapeNameEl.textContent = ""; // 혹시 이전 값 제거
+      }
+    }
+
+    function showNameInImageMode() {
+      if (mode !== "imageToName") return;
+      const item = getCurrentHandshape();
+      nameVisible = !nameVisible; // 토글 (원하면 항상 보이도록 바꿔도 됨)
+
+      if (nameVisible) {
+        nameBox.classList.remove("hidden");
+        handshapeNameEl.textContent = item.name;
+        hintTextEl.textContent = "다른 문제로 넘어가려면 ← / → 키를 누르세요.";
+      } else {
+        nameBox.classList.add("hidden");
+        handshapeNameEl.textContent = "";
+        hintTextEl.textContent = "그림을 보고 수형 이름을 떠올려 보세요. 정답 이름은 키보드 N 을 눌러 확인할 수 있어요.";
+      }
+    }
+
+    function showImagePopup() {
+      if (mode !== "nameToImage") return;
+      const item = getCurrentHandshape();
+      popupImage.src = item.file;
+      popupImage.alt = `${item.name} 수형 그림`;
+      popup.classList.remove("hidden");
+      popupVisible = true;
+    }
+
+    function hidePopup() {
+      popup.classList.add("hidden");
+      popupVisible = false;
+    }
+
+    function goPrev() {
+      if (currentIndex > 0) {
+        currentIndex--;
+      } else {
+        currentIndex = handshapes.length - 1; // 맨 앞으로 가면 끝으로 순환
+      }
+      nameVisible = false;
+      hidePopup();
+      renderCurrent();
+    }
+
+    function goNext() {
+      if (currentIndex < handshapes.length - 1) {
+        currentIndex++;
+      } else {
+        currentIndex = 0; // 마지막에서 다시 처음으로
+      }
+      nameVisible = false;
+      hidePopup();
+      renderCurrent();
+    }
+
+    function toggleOrder() {
+      // R 키 또는 버튼: 랜덤 <-> 원래 순서(1~66) 토글
+      if (!isRandomOrder) {
+        currentOrder = shuffleArray(originalOrder);
+        isRandomOrder = true;
+      } else {
+        currentOrder = [...originalOrder];
+        isRandomOrder = false;
+      }
+      currentIndex = 0;
+      nameVisible = false;
+      hidePopup();
+      renderCurrent();
+    }
+
+    // ===== 이벤트 연결 =====
+    btnNameToImage.addEventListener("click", () => setMode("nameToImage"));
+    btnImageToName.addEventListener("click", () => setMode("imageToName"));
+    btnBackToMode.addEventListener("click", backToModeSelect);
+
+    btnPrev.addEventListener("click", goPrev);
+    btnNext.addEventListener("click", goNext);
+    btnToggleOrder.addEventListener("click", toggleOrder);
+
+    // 팝업 클릭 시 닫기
+    popup.addEventListener("click", hidePopup);
+
+    // 키보드 단축키
+    document.addEventListener("keydown", (event) => {
+      // 팝업이 떠 있을 때 Esc로 닫기
+      if (popupVisible && event.key === "Escape") {
+        hidePopup();
+        return;
+      }
+
+      // 아직 모드 선택 전이면 무시
+      if (!mode) return;
+
+      switch (event.key) {
+        case "ArrowLeft":
+          event.preventDefault();
+          goPrev();
+          break;
+        case "ArrowRight":
+          event.preventDefault();
+          goNext();
+          break;
+        case "r":
+        case "R":
+          event.preventDefault();
+          toggleOrder();
+          break;
+        case "i":
+        case "I":
+          // 이름 → 그림 모드에서만 팝업
+          event.preventDefault();
+          if (mode === "nameToImage") {
+            showImagePopup();
+          }
+          break;
+        case "n":
+        case "N":
+          // 그림 → 이름 모드에서 이름 표시
+          event.preventDefault();
+          if (mode === "imageToName") {
+            showNameInImageMode();
+          }
+          break;
+      }
+    });
+  </script>
+</body>
+</html>
