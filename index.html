@@ -698,6 +698,21 @@
       if (!mode) return;
 
       switch (event.key) {
+        case "ArrowUp":
+      // 위 화살표 = 수형이름 나오게 (imageToName 모드에서 N 키랑 같은 역할)
+      event.preventDefault();
+      if (mode === "imageToName") {
+        showNameInImageMode();
+      }
+      break;
+
+    case "ArrowDown":
+      // 아래 화살표 = 수형그림 나오게 (nameToImage 모드에서 I 키랑 같은 역할)
+      event.preventDefault();
+      if (mode === "nameToImage") {
+        showImagePopup();
+      }
+      break;
         case "ArrowLeft":
           event.preventDefault();
           goPrev();
