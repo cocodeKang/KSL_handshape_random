@@ -5,6 +5,37 @@
   <title>수형 퀴즈 연습</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    /* 전체화면 전용 UI */
+.fullscreen-active .card {
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+.fullscreen-active header,
+.fullscreen-active .viewer-header,
+.fullscreen-active .viewer-footer,
+.fullscreen-active .hint-text {
+  display: none !important;
+}
+
+.fullscreen-active .viewer-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-active #handshapeName {
+  font-size: 4rem !important;
+}
+
+.fullscreen-active #handshapeImage {
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+}
+
     * {
       box-sizing: border-box;
     }
@@ -611,7 +642,42 @@
           }
           break;
       }
-    });
+      // ===== 전체화면 기능 =====
+
+function enterFullscreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) elem.requestFullscreen();
+  document.body.classList.add("fullscreen-active");
+}
+
+function exitFullscreen() {
+  if (document.exitFullscreen) document.exitFullscreen();
+  document.body.classList.remove("fullscreen-active");
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    enterFullscreen();
+  } else {
+    exitFullscreen();
+  }
+}
+
+// ESC로 빠져나올 때 UI 복구
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement) {
+    document.body.classList.remove("fullscreen-active");
+  }
+});
+
+// F 키로 전체화면 ON/OFF
+document.addEventListener("keydown", (event) => {
+  if (event.key === "f" || event.key === "F") {
+    event.preventDefault();
+    toggleFullscreen();
+  }
+});
+
   </script>
 </body>
 </html>
