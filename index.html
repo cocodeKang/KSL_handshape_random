@@ -282,6 +282,7 @@
             <span id="orderLabel" class="badge">순서: 1~66</span>
           </div>
           <div>
+            <button id="btnFullscreen" class="small secondary">전체화면</button> <!-- ⭐ 추가 -->
             <button id="btnBackToMode" class="small secondary">모드 선택으로</button>
           </div>
         </div>
@@ -424,6 +425,7 @@
     const btnNameToImage = document.getElementById("btnNameToImage");
     const btnImageToName = document.getElementById("btnImageToName");
     const btnBackToMode = document.getElementById("btnBackToMode");
+    const btnFullscreen = document.getElementById("btnFullscreen");
 
     const modeLabel = document.getElementById("modeLabel");
     const orderLabel = document.getElementById("orderLabel");
@@ -593,7 +595,8 @@
     btnNameToImage.addEventListener("click", () => setMode("nameToImage"));
     btnImageToName.addEventListener("click", () => setMode("imageToName"));
     btnBackToMode.addEventListener("click", backToModeSelect);
-
+    btnFullscreen.addEventListener("click", toggleFullscreen);
+  
     btnPrev.addEventListener("click", goPrev);
     btnNext.addEventListener("click", goNext);
     btnToggleOrder.addEventListener("click", toggleOrder);
