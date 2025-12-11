@@ -600,7 +600,7 @@
     // 팝업 클릭 시 닫기
     popup.addEventListener("click", hidePopup);
 
-    // 키보드 단축키
+    // 키보드 단축키 (수형 이동 / 보기 관련)
     document.addEventListener("keydown", (event) => {
       // 팝업이 떠 있을 때 Esc로 닫기
       if (popupVisible && event.key === "Escape") {
@@ -608,7 +608,8 @@
         return;
       }
 
-      // 아직 모드 선택 전이면 무시
+      // 아직 모드 선택 전이면(=viewer 안 들어간 상태면) 키 입력 무시
+      // 단, F는 전체화면이니까 여기서 막지 않고 아래 다른 리스너에서 처리
       if (!mode) return;
 
       switch (event.key) {
@@ -642,42 +643,43 @@
           }
           break;
       }
-      // ===== 전체화면 기능 =====
+    });
 
-function enterFullscreen() {
-  const elem = document.documentElement;
-  if (elem.requestFullscreen) elem.requestFullscreen();
-  document.body.classList.add("fullscreen-active");
-}
+    // ===== 전체화면 기능 =====
 
-function exitFullscreen() {
-  if (document.exitFullscreen) document.exitFullscreen();
-  document.body.classList.remove("fullscreen-active");
-}
+    function enterFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      document.body.classList.add("fullscreen-active");
+    }
 
-function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    enterFullscreen();
-  } else {
-    exitFullscreen();
-  }
-}
+    function exitFullscreen() {
+      if (document.exitFullscreen) document.exitFullscreen();
+      document.body.classList.remove("fullscreen-active");
+    }
 
-// ESC로 빠져나올 때 UI 복구
-document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement) {
-    document.body.classList.remove("fullscreen-active");
-  }
-});
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        enterFullscreen();
+      } else {
+        exitFullscreen();
+      }
+    }
 
-// F 키로 전체화면 ON/OFF
-document.addEventListener("keydown", (event) => {
-  if (event.key === "f" || event.key === "F") {
-    event.preventDefault();
-    toggleFullscreen();
-  }
-});
+    // ESC로 전체화면 빠져나올 때 UI 복구
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement) {
+        document.body.classList.remove("fullscreen-active");
+      }
+    });
 
+    // F 키로 전체화면 ON/OFF
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "f" || event.key === "F") {
+        event.preventDefault();
+        toggleFullscreen();
+      }
+    });
   </script>
 </body>
 </html>
